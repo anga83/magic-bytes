@@ -106,7 +106,7 @@ func isPrintableText(s string) bool {
 		return false
 	}
 	for _, r := range s {
-		if r == 0 || (unicode.IsControl(r) && r != '\t') {
+		if r == 0 || (unicode.IsControl(r) && r != '\t' && r != '\n' && r != '\r') {
 			return false
 		}
 	}

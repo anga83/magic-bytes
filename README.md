@@ -19,6 +19,7 @@ Ein schneller, abhängigkeitsfreier **Magic-Byte-Detektor** in Go, der einzelne 
   - **Ogg**: `OGG (Vorbis)`, `Opus`, `OGA (FLAC)`, `OGV (Theora)`
   - **Executables**: `PE/EXE` vs. `PE/DLL`, `Java Class` vs. `Mach-O Universal Binary (0xCAFEBABE)`
 - **Shebang-Erkennung für Skripte**: Erkennt bei Textdateien automatisch Shebang-Zeilen (z. B. `#!/usr/bin/env python3`, `#!/bin/bash`, `#!/usr/bin/env -S deno run`, `#!/usr/bin/perl`) und ordnet die passende Skript-Endung (`.py`, `.sh`, `.js`, `.ts`, `.rb`, `.pl`, `.php`, `.lua`, `.ps1`, …) für `--rename` zu.
+- **Struktur-Erkennung für Textformate (Fallback)**: Wenn weder binäre Magic Bytes noch ein Shebang gefunden werden, prüft das Tool mit konservativen Heuristiken auf eindeutige Syntax für **JSON** (`.json`), **HTML** (`.html`) und **Markdown** (`.md`, z. B. `##`-Überschriften, `[...](...)`-Links, Code-Fences, Tabellen) und passt auch hier die Endung an.
 - **Keine externen Abhängigkeiten**: Nutzt ausschließlich die Go-Standardbibliothek.
 
 ---
@@ -100,14 +101,14 @@ Die Signatur-Datenbank basiert auf der [Wikipedia List of file signatures](https
 | **Audio** | MP3 (ID3v2 & Frame Sync), FLAC, WAV, OGG Vorbis, Opus, OGA, AAC (ADTS), M4A, AIFF, MIDI, WMA/ASF, AMR, APE, WavPack, AU/SND |
 | **Video** | MP4, M4V, MOV, AVI, MKV, WebM, FLV, SWF, MPEG-PS, MPEG-TS, 3GP, 3G2, RM/RMVB, MXF, OGV |
 | **Archive & Pakete** | ZIP, GZIP, BZIP2, XZ, Zstandard, LZ4, LZMA/LZIP, 7-Zip, RAR (v4 & v5), TAR (`ustar`), CAB, ISO 9660, DEB, AR, RPM, XAR/PKG, CPIO, Unix Compress (`.Z`) |
-| **Dokumente** | PDF, PostScript/EPS, RTF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB, MOBI/AZW, DjVu, CHM, OLE2, XML |
+| **Dokumente** | PDF, PostScript/EPS, RTF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB, MOBI/AZW, DjVu, CHM, OLE2, XML, HTML (`.html`), Markdown (`.md`) |
 | **Executables & Bytecode** | ELF, PE (`.exe`/`.dll`), Mach-O (32/64/Fat), WebAssembly (`.wasm`), Java Class, JAR, APK, IPA, DEX, Lua Bytecode, LLVM Bitcode |
 | **Fonts** | WOFF, WOFF2, OTF, TTF |
 | **Skripte (Shebang)** | Python (`.py`), Shell/Bash (`.sh`), Zsh (`.zsh`), Fish (`.fish`), Node.js (`.js`), TypeScript/Deno (`.ts`), Ruby (`.rb`), Perl (`.pl`), PHP (`.php`), Lua (`.lua`), AWK (`.awk`), PowerShell (`.ps1`), R (`.R`), Tcl (`.tcl`), Swift (`.swift`), Groovy (`.groovy`), Scala (`.scala`) |
-| **Datenbanken & Sonstiges** | SQLite 3, Apache Parquet, PCAP, PCAP-NG, HDF5, FITS, Blender (`.blend`), PGP ASCII Armor, PEM, UTF-8/UTF-16/UTF-32 BOM |
+| **Datenbanken & Sonstiges** | SQLite 3, JSON (`.json`), Apache Parquet, PCAP, PCAP-NG, HDF5, FITS, Blender (`.blend`), PGP ASCII Armor, PEM, UTF-8/UTF-16/UTF-32 BOM |
 
 > [!NOTE]
-> Reine Textdateien ohne BOM, Shebang oder eindeutigen Header (z. B. einfaches `.txt` oder `.csv`) besitzen keine binären Magic Bytes und werden bewusst als `Unknown` gemeldet (und mit `--rename` nicht verändert).
+> Reine Textdateien ohne BOM, Shebang oder eindeutige JSON-/HTML-/Markdown-Struktur (z. B. einfaches `.txt` oder `.csv`) werden bewusst als `Unknown` gemeldet und mit `--rename` nicht verändert, um False Positives zu vermeiden.
 
 ---
 
@@ -122,6 +123,7 @@ magic-bytes/
 │   │   ├── detector.go              # Signatur-Engine
 │   │   ├── container.go             # Container-Disambiguierung (ZIP, RIFF, ISO BMFF, EBML, Ogg, PE)
 │   │   ├── shebang.go               # Shebang-Erkennung für Skript-Dateien
+│   │   ├── text.go                  # Fallback-Erkennung für JSON, HTML und Markdown
 │   │   ├── signatures_db.go         # Magic-Byte-Datenbank
 │   │   └── detector_test.go         # Unit-Tests für Formaterkennung
 │   └── renamer/

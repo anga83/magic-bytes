@@ -130,6 +130,10 @@ func DetectReader(r io.ReadSeeker, size int64) (Result, error) {
 		}, nil
 	}
 
+	if res, ok := detectTextFormat(r, header, size); ok {
+		return res, nil
+	}
+
 	return UnknownResult(), nil
 }
 
