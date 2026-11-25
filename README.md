@@ -136,3 +136,16 @@ Tests ausführen:
 ```bash
 go test -v ./...
 ```
+
+---
+
+## Automatisierte Releases (GitHub Actions)
+
+Der Workflow [.github/workflows/release.yml](.github/workflows/release.yml) wird bei jedem Push auf `main` ausgeführt:
+1. Führt `go test -v ./...` aus.
+2. Ermittelt das neueste SemVer-Tag (`vX.Y.Z`) und inkrementiert die Patch-Version automatisch (Start bei `v0.1.0`).
+3. Kompiliert statische Binaries für:
+   - macOS Apple Silicon (`magic-bytes-darwin-arm64`)
+   - Linux ARM64 (`magic-bytes-linux-arm64`)
+   - Linux AMD64 (`magic-bytes-linux-amd64`)
+4. Erzeugt `SHA256SUMS.txt`, pusht das neue Git-Tag und veröffentlicht den GitHub Release samt Release-Notes.
