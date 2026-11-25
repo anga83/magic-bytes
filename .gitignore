@@ -1,0 +1,17 @@
+# Compiled binary
+/magic-bytes
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test & coverage artifacts
+*.test
+*.out
+coverage.txt
+
+# macOS & Editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
