@@ -81,6 +81,12 @@ func TestDetectReader_Formats(t *testing.T) {
 		{"EPUB", makeZIPBytes(map[string]string{"mimetype": "application/epub+zip"}), "EPUB", ".epub", true},
 		{"Generic ZIP", makeZIPBytes(map[string]string{"hello.txt": "world"}), "ZIP", ".zip", true},
 		{"WOFF2", []byte("wOF2\x00\x01\x00\x00"), "WOFF2", ".woff2", true},
+		{"AMR", []byte("#!AMR\n\x00\x01"), "AMR", ".amr", true},
+		{"Shebang Python3", []byte("#!/usr/bin/env python3\nprint('hi')\n"), "Python Script", ".py", true},
+		{"Shebang Bash", []byte("#!/bin/bash\necho hello\n"), "Bash Script", ".sh", true},
+		{"Shebang Env -S Deno", []byte("#!/usr/bin/env -S deno run\nconsole.log(1)\n"), "TypeScript", ".ts", true},
+		{"Shebang Perl5", []byte("#!/usr/bin/perl5\nprint \"hi\";\n"), "Perl Script", ".pl", true},
+		{"Shebang Custom", []byte("#!/usr/local/bin/mytool\n"), "Script", "", true},
 		{"Unknown Plain", []byte("just some plain text without magic bytes"), "Unknown", "", false},
 		{"Empty", []byte{}, "Unknown", "", false},
 	}

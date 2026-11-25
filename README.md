@@ -18,6 +18,7 @@ Ein schneller, abhängigkeitsfreier **Magic-Byte-Detektor** in Go, der einzelne 
   - **EBML**: `WebM`, `MKV`
   - **Ogg**: `OGG (Vorbis)`, `Opus`, `OGA (FLAC)`, `OGV (Theora)`
   - **Executables**: `PE/EXE` vs. `PE/DLL`, `Java Class` vs. `Mach-O Universal Binary (0xCAFEBABE)`
+- **Shebang-Erkennung für Skripte**: Erkennt bei Textdateien automatisch Shebang-Zeilen (z. B. `#!/usr/bin/env python3`, `#!/bin/bash`, `#!/usr/bin/env -S deno run`, `#!/usr/bin/perl`) und ordnet die passende Skript-Endung (`.py`, `.sh`, `.js`, `.ts`, `.rb`, `.pl`, `.php`, `.lua`, `.ps1`, …) für `--rename` zu.
 - **Keine externen Abhängigkeiten**: Nutzt ausschließlich die Go-Standardbibliothek.
 
 ---
@@ -102,10 +103,11 @@ Die Signatur-Datenbank basiert auf der [Wikipedia List of file signatures](https
 | **Dokumente** | PDF, PostScript/EPS, RTF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB, MOBI/AZW, DjVu, CHM, OLE2, XML |
 | **Executables & Bytecode** | ELF, PE (`.exe`/`.dll`), Mach-O (32/64/Fat), WebAssembly (`.wasm`), Java Class, JAR, APK, IPA, DEX, Lua Bytecode, LLVM Bitcode |
 | **Fonts** | WOFF, WOFF2, OTF, TTF |
+| **Skripte (Shebang)** | Python (`.py`), Shell/Bash (`.sh`), Zsh (`.zsh`), Fish (`.fish`), Node.js (`.js`), TypeScript/Deno (`.ts`), Ruby (`.rb`), Perl (`.pl`), PHP (`.php`), Lua (`.lua`), AWK (`.awk`), PowerShell (`.ps1`), R (`.R`), Tcl (`.tcl`), Swift (`.swift`), Groovy (`.groovy`), Scala (`.scala`) |
 | **Datenbanken & Sonstiges** | SQLite 3, Apache Parquet, PCAP, PCAP-NG, HDF5, FITS, Blender (`.blend`), PGP ASCII Armor, PEM, UTF-8/UTF-16/UTF-32 BOM |
 
 > [!NOTE]
-> Reine Textdateien ohne BOM oder eindeutigen Header (z. B. einfaches `.txt` oder `.csv`) besitzen keine binären Magic Bytes und werden bewusst als `Unknown` gemeldet (und mit `--rename` nicht verändert).
+> Reine Textdateien ohne BOM, Shebang oder eindeutigen Header (z. B. einfaches `.txt` oder `.csv`) besitzen keine binären Magic Bytes und werden bewusst als `Unknown` gemeldet (und mit `--rename` nicht verändert).
 
 ---
 
@@ -119,6 +121,7 @@ magic-bytes/
 │   ├── detector/
 │   │   ├── detector.go              # Signatur-Engine
 │   │   ├── container.go             # Container-Disambiguierung (ZIP, RIFF, ISO BMFF, EBML, Ogg, PE)
+│   │   ├── shebang.go               # Shebang-Erkennung für Skript-Dateien
 │   │   ├── signatures_db.go         # Magic-Byte-Datenbank
 │   │   └── detector_test.go         # Unit-Tests für Formaterkennung
 │   └── renamer/

@@ -473,6 +473,11 @@ var signaturesDB = []Signature{
 		Patterns: []Pattern{{Offset: 0, Value: []byte("-----BEGIN ")}},
 	},
 	{
+		Name: "Shebang", Description: "Executable Script with Shebang", MIMEType: "text/plain", Category: "Script", Priority: 30,
+		Patterns: []Pattern{{Offset: 0, Value: []byte("#!")}},
+		Inspect:  inspectShebang,
+	},
+	{
 		Name: "UTF-8 BOM", Description: "UTF-8 Text with Byte Order Mark", Extension: ".txt", MIMEType: "text/plain; charset=utf-8", Category: "Text", Priority: 20,
 		Patterns: []Pattern{{Offset: 0, Value: []byte{0xEF, 0xBB, 0xBF}}},
 	},
